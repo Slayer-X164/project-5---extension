@@ -1,30 +1,19 @@
-let myLeads = []
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js"
+const firebaseConfig = {
+    databaseURL:"https://leadstracker-app-e52a1-default-rtdb.asia-southeast1.firebasedatabase.app/"
+}
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app)
+const referenceInDB = ref(database,"leads")
+
+
 const inputEl = document.getElementById("input-el")
 const inputBtn = document.getElementById("input-btn")
 const ulEl = document.getElementById("ul-el")
 const deleteBtn = document.getElementById("delete-btn")
-const saveTabBtn = document.getElementById("save-tab-btn")
-const getLeadsFromLocStore = JSON.parse(localStorage.getItem("myLeads"))
 
-saveTabBtn.addEventListener("click",()=>{
-    chrome.tabs.query({active:true, currentWindow:true},(tabs)=>{
-    myLeads.push(tabs[0].url)
-    localStorage.setItem("myLeads", JSON.stringify(myLeads))
-    renderLeads(myLeads)
-    })
-})
 
-if(getLeadsFromLocStore){
-    myLeads=getLeadsFromLocStore
-    renderLeads(myLeads)
-}
-
-inputBtn.addEventListener("click", ()=>{
-    myLeads.push(inputEl.value)
-    inputEl.value = ""
-    localStorage.setItem("myLeads", JSON.stringify(myLeads))
-    renderLeads(myLeads)
-})
 
 function renderLeads(leads){
     let listItems = ""
@@ -39,9 +28,23 @@ function renderLeads(leads){
     ulEl.innerHTML=listItems
 }
 
-deleteBtn.addEventListener("click",()=>{
-    localStorage.clear()
-    myLeads = []
-    renderLeads(myLeads)
+onValue(referenceInDB, function(snapshot){
+    const snapshotDoesExist = snapshot.exists()
+    if(snapshotDoesExist){
+        const snapshotValues = snapshot.val()
+        const allLeads = Object.values(snapshotValues)
+        renderLeads(allLeads)
+    }
 })
 
+deleteBtn.addEventListener("click",()=>{
+    remove(referenceInDB)
+    ulEl.innerHTML=""
+
+})
+
+inputBtn.addEventListener("click", ()=>{
+    push(referenceInDB, inputEl.value)
+    inputEl.value = ""
+
+})
