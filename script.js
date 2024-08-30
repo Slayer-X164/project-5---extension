@@ -59,7 +59,9 @@ deleteBtn.addEventListener("click",()=>{
 })
 
 inputBtn.addEventListener("click", ()=>{
-    push(referenceInDB, inputEl.value)
-    inputEl.value = ""
+
+        push(referenceInDB, inputEl.value)
+        inputEl.value = ""
+    
 
 })
