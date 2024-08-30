@@ -30,7 +30,7 @@ function renderLeads(leads){
 
 onValue(referenceInDB, function(snapshot){
     const snapshotDoesExist = snapshot.exists()
-    if(snapshotDoesExist){
+    if(snapshotDoesExist    ){
         const snapshotValues = snapshot.val()
         const allLeads = Object.values(snapshotValues)
         renderLeads(allLeads)
@@ -38,9 +38,24 @@ onValue(referenceInDB, function(snapshot){
 })
 
 deleteBtn.addEventListener("click",()=>{
-    remove(referenceInDB)
-    ulEl.innerHTML=""
+    const confirmDelete = document.getElementById("confirmDelete")
+    const yesBtn = document.getElementById("yes-btn")
+    const noBtn = document.getElementById("no-btn")
+    const body = document.getElementById("body")
+    confirmDelete.style.display = "flex"
 
+    body.style.backgroundColor = "#7877775c"
+    yesBtn.addEventListener("click",()=>{
+        confirmDelete.style.display = "none"
+        body.style.backgroundColor = "white"
+        remove(referenceInDB)
+        ulEl.innerHTML=""
+      })
+
+    noBtn.addEventListener("click",()=>{
+        confirmDelete.style.display = "none"
+        body.style.backgroundColor = "white"
+    })
 })
 
 inputBtn.addEventListener("click", ()=>{
